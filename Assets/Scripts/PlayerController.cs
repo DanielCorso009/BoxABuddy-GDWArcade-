@@ -42,13 +42,13 @@ public class PlayerController : MonoBehaviour
     public GameObject otherPlayer;
     private PlayerController otherScript;
      
-    public GameObject hitbox;
+    //public GameObject hitbox;
     void Start()
     {
        //print(controls.Length);
        anim = GetComponent<Animator>();
        otherScript = otherPlayer.GetComponent<PlayerController>();
-       hitbox.SetActive(false);
+       //hitbox.SetActive(false);
 
     }
 
@@ -105,8 +105,8 @@ public class PlayerController : MonoBehaviour
         //////////////////////////////
         if(Input.GetKey(controls[5])){//will be to block
                 //print(controls[5]);
-                anim.SetBool(name, true);
-                inBlock = true;
+            anim.SetBool("block", true);
+            inBlock = true;
             }else{
             inBlock = false;
             anim.SetBool("block",false);
@@ -116,19 +116,19 @@ public class PlayerController : MonoBehaviour
             if(Input.GetKeyDown(controls[4])){//will be to jab
                 //print(controls[4]);
                 animManager("jab");
-                inAtk = true;
+                
             }
 
             else if(Input.GetKeyDown(controls[6])){//will be to cross
                 //print(controls[6]);
                 animManager("cross");
-                inAtk = true;
+                
                 
             }
             else if(Input.GetKeyDown(controls[7])){//will be to hook left
                 //print(controls[7]);
                 animManager("hook-left");
-                inAtk = true;
+
 
             }
             else if(Input.GetKeyDown(controls[9])){// will be to hook right
@@ -136,10 +136,8 @@ public class PlayerController : MonoBehaviour
                 animManager("hook-right");
             }
             if(anim.GetCurrentAnimatorStateInfo(0).IsTag("idle")){
-                inAtk = false;
                 Damage = 0;
-                hitbox.SetActive(false);
-
+                //hitbox.SetActive(false);
             }
         }
         movement.x = R-L;
@@ -174,11 +172,10 @@ public class PlayerController : MonoBehaviour
 
                 break;
             default:
-                Damage = 0;
                 break;
         }
 
-            hitbox.SetActive(true);
+            //hitbox.SetActive(true);
 
     }
     //makes sure nothing funny happens with physics
@@ -210,14 +207,17 @@ public class PlayerController : MonoBehaviour
 
 
     }
-    private void OnCollisionEnter(Collision other){
-        if(inBlock && otherScript.inAtk){
+    private void OnTriggerEnter(Collider other){
+        print(other.gameObject.tag);
+        if(other.gameObject.tag.Equals("Attack")){
+            if(inBlock){
+                    print("?");
             stamina-=15+Damage;
-        }else if(inAtk && (!otherScript.inBlock)){
-            otherScript.health-=Damage;
-            print("hi");
-
-        }else{
+            }else {
+                
+            health-=otherScript.Damage;
             }
+        }
+
     }   
 }
