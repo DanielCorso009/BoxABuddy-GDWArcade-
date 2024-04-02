@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,9 @@ public class GamePlay : MonoBehaviour
     public GameObject sBar1;
     public GameObject sBar2;
 
+    public GameObject[] fans = new GameObject[16];
+    
+    public Cheer[] cheers =new Cheer[16];
     public Text thisText;
 
     private PlayerController playerscript1;
@@ -53,9 +57,14 @@ public class GamePlay : MonoBehaviour
             staminascript2 = sBar2.GetComponent<SB2>();
             stam2 =playerscript2.stamina;
             staminascript1.SetMaxStamina(stam2);
-            
+
+
             thisText.text = playerscript2.wins +" | "+ playerscript1.wins;
 
+            for(int i = 0; i < fans.Length; i++){
+                
+                cheers[i] = fans[i].GetComponent<Cheer>();
+            }
 
 
     }
@@ -69,11 +78,18 @@ public class GamePlay : MonoBehaviour
             playerscript1.knockOut();
             playerscript2.Winner();
             playerscript2.wins++;
+            for(int i = cheers.Length/2; i < cheers.Length; i++){
+                cheers[i].speed = 5;
+            }
+
             StartCoroutine(ResetGame());
         }else if(health2 <=0){
             playerscript2.knockOut();
             playerscript1.Winner();
             playerscript1.wins++;
+            for(int i = 0; i < cheers.Length/2; i++){
+                cheers[i].speed = 5;
+            }
             StartCoroutine(ResetGame());
         }
     }
@@ -101,6 +117,9 @@ public class GamePlay : MonoBehaviour
         playerscript1.health = 150;
         playerscript2.health = 150;
         thisText.text = playerscript2.wins +" | "+ playerscript1.wins;
+            for(int i = 0; i < cheers.Length; i++){
+                cheers[i].speed = 0.5f;
+            }
         playerscript1.BackToIdle();
         playerscript2.BackToIdle();
         HealthCheck();

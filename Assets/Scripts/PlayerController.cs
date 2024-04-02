@@ -29,7 +29,6 @@ public class PlayerController : MonoBehaviour
     ///////////////////////////////////////////////////
     
    //states
-    private bool isAtk = false;
     private bool inBlock = false;
 // component initializing
     private Animator anim;
@@ -70,7 +69,6 @@ public class PlayerController : MonoBehaviour
         if(stamina <=0){
             anim.SetBool("depleted", true);
             inBlock = false;
-            isAtk = false;
         }else if(stamina >= 50){
             anim.SetBool("depleted", false);
         }
@@ -111,6 +109,7 @@ public class PlayerController : MonoBehaviour
                 //print(controls[5]);
             anim.SetBool("block", true);
             inBlock = true;
+            Damage =0;
             }else{
             inBlock = false;
             anim.SetBool("block",false);
@@ -140,8 +139,8 @@ public class PlayerController : MonoBehaviour
                 animManager("hook-right");
             }
         }
-        movement.x = R-L;
-        movement.z = U-D;
+        movement.x = L-R;
+        movement.z = D-U;
     }
 
     // will add a function to handle anims and damage scale. also  a function to 
@@ -189,6 +188,7 @@ public class PlayerController : MonoBehaviour
         if(transform.position.y != 0){
             transform.position = new Vector3(transform.position.x,0,transform.position.z);
         }
+        transform.rotation = new Quaternion(0,transform.rotation.y,0,0);
     }
     //battle functions
     public void knockOut(){
