@@ -4,9 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Attack
-  - Block
-  - Idle
+  - Player1
+  - Player2
   layers:
   - Default
   - TransparentFX
