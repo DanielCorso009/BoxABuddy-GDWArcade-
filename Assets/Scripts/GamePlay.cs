@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -53,8 +54,35 @@ public class GamePlay : MonoBehaviour
             stam2 =playerscript2.stamina;
             staminascript1.SetMaxStamina(stam2);
             
+            thisText.text = playerscript2.wins +" | "+ playerscript1.wins;
 
 
+
+    }
+    public void HealthCheck(){
+        health1 =playerscript1.health;
+        health2 =playerscript2.health;
+        healthscript1.SetHealth(health1);
+        healthscript2.SetHealth(health2);
+        //updates winner
+        if(health1 <=0){
+            playerscript1.knockOut();
+            playerscript2.Winner();
+            playerscript2.wins++;
+            StartCoroutine(ResetGame());
+        }else if(health2 <=0){
+            playerscript2.knockOut();
+            playerscript1.Winner();
+            playerscript1.wins++;
+            StartCoroutine(ResetGame());
+        }
+    }
+    public void StamCheck(){
+        stam1 =playerscript1.stamina;
+        stam2 =playerscript2.stamina;
+//updates stamina
+        staminascript1.SetStamina(stam1);
+        staminascript2.SetStamina(stam2);
     }
 
     // Update is called once per frame
@@ -64,31 +92,6 @@ public class GamePlay : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Escape)) { 
 	        Application.Quit();
         }
-        //thisText.text = playerscript2.wins +" | "+ playerscript1.wins;
-
-        health1 =playerscript1.health;
-        health2 =playerscript2.health;
-        stam1 =playerscript1.stamina;
-        stam2 =playerscript2.stamina;
-//updates health
-        healthscript1.SetHealth(health1);
-        healthscript2.SetHealth(health2);
-//updates stamina
-        staminascript1.SetStamina(stam1);
-        staminascript2.SetStamina(stam2);
-
-//updates winner
-        if(health1 <=0){
-            playerscript1.knockOut();
-            playerscript2.Winner();
-           // playerscript2.wins++;
-            StartCoroutine(ResetGame());
-        }else if(health2 <=0){
-            playerscript2.knockOut();
-            playerscript1.Winner();
-           // playerscript1.wins++;
-            StartCoroutine(ResetGame());
-        }
 
     }
 
@@ -97,10 +100,10 @@ public class GamePlay : MonoBehaviour
         yield return new WaitForSeconds(2);
         playerscript1.health = 150;
         playerscript2.health = 150;
-
+        thisText.text = playerscript2.wins +" | "+ playerscript1.wins;
         playerscript1.BackToIdle();
         playerscript2.BackToIdle();
-
+        HealthCheck();
 
     }
 }

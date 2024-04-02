@@ -22,9 +22,6 @@ public class PlayerController : MonoBehaviour
     
     //stats./
     public int health = 150;
-    public int jabPower = 5;
-    public int crossPower = 10;
-    public int hookPower = 15;
     public float dash = 1f;
     private int Damage = 0;    
     public float stamina = 100f;
@@ -32,15 +29,16 @@ public class PlayerController : MonoBehaviour
     ///////////////////////////////////////////////////
     
    //states
+    private bool isAtk = false;
     private bool inBlock = false;
-    private bool inAtk = false;
-
 // component initializing
     private Animator anim;
     private LookAtConstraint look;
 
     public GameObject otherPlayer;
     private PlayerController otherScript;
+
+    private GamePlay gamePlay;
      
     //public GameObject hitbox;
     void Start()
@@ -48,6 +46,7 @@ public class PlayerController : MonoBehaviour
        //print(controls.Length);
        anim = GetComponent<Animator>();
        otherScript = otherPlayer.GetComponent<PlayerController>();
+       gamePlay = GameObject.Find("UiandEngine").GetComponent<GamePlay>();
        //hitbox.SetActive(false);
 
     }
@@ -58,6 +57,9 @@ public class PlayerController : MonoBehaviour
         if(!anim.GetBool("depleted")){
         InputHandler();
         keepInBounds();
+        //if(anim.GetCurrentAnimatorStateInfo(0).IsTag("ATK")) isAtk = true;else isAtk=false;
+        print(anim.GetCurrentAnimatorStateInfo(0).IsTag("idle"));
+
 
         transform.Translate(movement*speed*dash*Time.deltaTime);
         }
@@ -67,10 +69,12 @@ public class PlayerController : MonoBehaviour
         }
         if(stamina <=0){
             anim.SetBool("depleted", true);
+            inBlock = false;
+            isAtk = false;
         }else if(stamina >= 50){
             anim.SetBool("depleted", false);
         }
-
+        gamePlay.StamCheck();
     }
 
     void InputHandler(){
@@ -135,10 +139,6 @@ public class PlayerController : MonoBehaviour
                 //print(controls[9]);
                 animManager("hook-right");
             }
-            if(anim.GetCurrentAnimatorStateInfo(0).IsTag("idle")){
-                Damage = 0;
-                //hitbox.SetActive(false);
-            }
         }
         movement.x = R-L;
         movement.z = U-D;
@@ -148,33 +148,29 @@ public class PlayerController : MonoBehaviour
     void animManager(string name){
         switch(name){
             case "jab":
-                Damage = jabPower;
                 anim.SetTrigger(name);              
                 stamina-= 2;
-
+                Damage = 5;
                 break;
-            case "cross":
-                Damage = crossPower;    
+            case "cross":  
                 anim.SetTrigger(name);            
                 stamina-= 3;
-
+                Damage = 7;
                 break;
             case "hook-left":
-                Damage = hookPower;
                 anim.SetTrigger(name);
                 stamina -=8;
-
+                Damage = 10;
                 break;
             case "hook-right":
-                Damage = hookPower;
                 anim.SetTrigger(name);
                 stamina -=8;
-
+                Damage = 10;
                 break;
             default:
                 break;
-        }
 
+        }
             //hitbox.SetActive(true);
 
     }
@@ -208,16 +204,16 @@ public class PlayerController : MonoBehaviour
 
     }
     private void OnTriggerEnter(Collider other){
-        print(other.gameObject.tag);
-        if(other.gameObject.tag.Equals("Attack")){
+        //print(otherScript.isAtk);
+         print(other.gameObject.name);
+        if(!other.gameObject.name.Equals("Hitbox Center"))
+            //print(other.gameObject.name);
             if(inBlock){
                     print("?");
-            stamina-=15+Damage;
-            }else {
-                
-            health-=otherScript.Damage;
+            stamina-=15+otherScript.Damage;
+            }else{
+                health-=otherScript.Damage;
+                gamePlay.HealthCheck();
             }
         }
-
-    }   
 }
